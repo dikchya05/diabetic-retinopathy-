@@ -1,0 +1,25 @@
+# core
+numpy
+pandas
+Pillow
+tqdm
+
+# ML
+torch
+torchvision
+timm
+albumentations
+scikit-learn==1.2.0
+
+
+
+# explainability
+pytorch-grad-cam
+
+# backend
+fastapi
+uvicorn[standard]
+python-multipart
+
+# optional
+mlflow

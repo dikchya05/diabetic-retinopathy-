@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+ml/models/best_model.pth
+data/
+*.zip
+.env
