@@ -5,3 +5,4 @@ ml/models/best_model.pth
 data/
 *.zip
 .env
+kaggle.json
