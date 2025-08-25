@@ -31,13 +31,19 @@ class TestBackendAPI:
         """Test root endpoint"""
         response = self.client.get("/")
         assert response.status_code == 200
-        assert response.json() == {"message": "Hello World"}
+        json_response = response.json()
+        assert json_response["message"] == "Diabetic Retinopathy Detection API"
+        assert "version" in json_response
+        assert json_response["status"] == "operational"
     
     def test_health_endpoint(self):
         """Test health check endpoint"""
         response = self.client.get("/health")
         assert response.status_code == 200
-        assert response.json() == {"status": "ok"}
+        json_response = response.json()
+        assert json_response["status"] in ["healthy", "degraded"]
+        assert "timestamp" in json_response
+        assert "version" in json_response
     
     def test_predict_endpoint_no_file(self):
         """Test predict endpoint without file"""

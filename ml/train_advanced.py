@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-from utils import RetinopathyDataset, get_transforms, create_kfold_splits
+from data_preprocessing import DataPreprocessor, APTOSDataset
 from models.advanced_architectures import (
     create_advanced_model, get_model_recipe, MODEL_RECIPES
 )
