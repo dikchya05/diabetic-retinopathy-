@@ -96,6 +96,9 @@ def train_loop(
     for epoch in range(start_epoch, epochs + 1):
         model.train()
         train_loss = 0.0
+        train_correct = 0
+        train_total = 0
+        
         for imgs, labels in tqdm(train_loader, desc=f"Train Epoch {epoch}/{epochs}"):
             imgs = imgs.to(device, non_blocking=True)
             labels = labels.to(device, non_blocking=True)
@@ -110,14 +113,21 @@ def train_loop(
             scaler.update()
 
             train_loss += loss.item() * imgs.size(0)
+            preds = outputs.argmax(dim=1)
+            train_correct += (preds == labels).sum().item()
+            train_total += labels.size(0)
 
         train_loss /= len(train_loader.dataset)
+        train_acc = train_correct / train_total
 
         # Validation
         model.eval()
         val_loss = 0.0
-        correct = 0
-        total = 0
+        val_correct = 0
+        val_total = 0
+        all_val_preds = []
+        all_val_labels = []
+        
         with torch.no_grad():
             for imgs, labels in val_loader:
                 imgs = imgs.to(device, non_blocking=True)
@@ -127,14 +137,23 @@ def train_loop(
                     loss = criterion(outputs, labels)
                 val_loss += loss.item() * imgs.size(0)
                 preds = outputs.argmax(dim=1)
-                correct += (preds == labels).sum().item()
-                total += labels.size(0)
+                val_correct += (preds == labels).sum().item()
+                val_total += labels.size(0)
+                
+                all_val_preds.extend(preds.cpu().numpy())
+                all_val_labels.extend(labels.cpu().numpy())
 
         val_loss /= len(val_loader.dataset)
-        val_acc = correct / total
+        val_acc = val_correct / val_total
+        
+        # Calculate additional metrics
+        from sklearn.metrics import f1_score, cohen_kappa_score
+        val_f1 = f1_score(all_val_labels, all_val_preds, average='weighted', zero_division=0)
+        val_kappa = cohen_kappa_score(all_val_labels, all_val_preds)
 
         print(
-            f"Epoch {epoch}: train_loss={train_loss:.4f}, val_loss={val_loss:.4f}, val_acc={val_acc:.4f}"
+            f"Epoch {epoch}: train_loss={train_loss:.4f}, train_acc={train_acc:.4f}, "
+            f"val_loss={val_loss:.4f}, val_acc={val_acc:.4f}, val_f1={val_f1:.4f}, val_kappa={val_kappa:.4f}"
         )
 
         scheduler.step(val_loss)

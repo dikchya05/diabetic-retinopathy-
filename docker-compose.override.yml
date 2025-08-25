@@ -1,0 +1,73 @@
+# Docker Compose override file for development
+# This file is automatically loaded when running docker-compose commands
+
+version: '3.8'
+
+services:
+  api:
+    # Override for development
+    build:
+      target: development
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=True
+      - LOG_LEVEL=DEBUG
+      - USE_CUDA=auto
+    volumes:
+      # Mount source code for live development
+      - .:/app
+      - ./ml/models:/app/models:ro
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    command: >
+      python -m uvicorn backend.app.main:app 
+      --host 0.0.0.0 
+      --port 8000 
+      --reload 
+      --reload-dir /app/backend
+      --reload-dir /app/ml
+
+  # Frontend development service
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+
+  # Database for development (optional)
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: diabetic_retinopathy
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    profiles:
+      - db
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    profiles:
+      - cache
+
+volumes:
+  postgres_data:
+  redis_data:

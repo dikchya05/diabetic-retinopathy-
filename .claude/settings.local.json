@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(python:*)",
+      "Bash(\"venv/Scripts/python.exe\" -m pip install --upgrade pip)",
+      "Bash(\"venv/Scripts/python.exe\" -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu)",
+      "Bash(\"venv/Scripts/python.exe\" -m pip install -r requirements.txt)",
+      "Bash(\"venv/Scripts/python.exe\" -m pip install grad-cam)",
+      "Bash(\"venv/Scripts/python.exe\" -m pip install pandas timm albumentations seaborn plotly fastapi uvicorn[standard] python-multipart pydantic pytest pytest-cov httpx black isort)",
+      "Bash(\"venv/Scripts/python.exe\" -m pip install python-json-logger jupyter ipykernel kaleido)",
+      "Bash(\"venv/Scripts/python.exe\" -c \"\nimport torch\nimport torchvision\nimport cv2\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport timm\nimport albumentations\nfrom sklearn import metrics\nimport fastapi\nimport plotly\nimport seaborn\nprint(''✅ All core dependencies installed successfully!'')\nprint(f''PyTorch version: {torch.__version__}'')\nprint(f''CUDA available: {torch.cuda.is_available()}'')\nprint(f''OpenCV version: {cv2.__version__}'')\nprint(f''Pandas version: {pd.__version__}'')\nprint(f''NumPy version: {np.__version__}'')\nprint(f''Timm version: {timm.__version__}'')\n\")",
+      "Bash(venv/Scripts/python:*)",
+      "Bash(venv/Scripts/pip install:*)",
+      "Bash(curl:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(cmd /c:*)",
+      "Bash(powershell:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\"
+    ]
+  }
+}
