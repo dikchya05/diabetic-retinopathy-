@@ -30,22 +30,32 @@ class APTOSDataset(Dataset):
     """Enhanced APTOS 2019 dataset with advanced preprocessing"""
     
     def __init__(self, 
-                 csv_file: str, 
-                 img_dir: str, 
+                 csv_file: Optional[str] = None,
+                 dataframe: Optional[pd.DataFrame] = None,
+                 img_dir: str = None, 
                  transform: Optional[A.Compose] = None,
                  image_size: int = 224,
                  use_cache: bool = True,
                  preprocess_mode: str = 'standard'):
         """
         Args:
-            csv_file: Path to CSV file with image names and labels
+            csv_file: Path to CSV file with image names and labels (optional if dataframe provided)
+            dataframe: DataFrame with image names and labels (optional if csv_file provided)
             img_dir: Directory with all images
             transform: Albumentations transform to apply
             image_size: Target image size
             use_cache: Whether to use image caching
             preprocess_mode: 'standard', 'clahe', 'ben_graham'
         """
-        self.data = pd.read_csv(csv_file)
+        if dataframe is not None:
+            self.data = dataframe
+            logger.info(f"Loaded {len(self.data)} samples from DataFrame")
+        elif csv_file is not None:
+            self.data = pd.read_csv(csv_file)
+            logger.info(f"Loaded {len(self.data)} samples from {csv_file}")
+        else:
+            raise ValueError("Either csv_file or dataframe must be provided")
+            
         self.img_dir = Path(img_dir)
         self.transform = transform
         self.image_size = image_size
@@ -53,7 +63,6 @@ class APTOSDataset(Dataset):
         self.preprocess_mode = preprocess_mode
         self.image_cache = {}
         
-        logger.info(f"Loaded {len(self.data)} samples from {csv_file}")
         logger.info(f"Using preprocessing mode: {preprocess_mode}")
     
     def __len__(self):
@@ -423,22 +432,20 @@ class DataPreprocessor:
         
         # Create datasets
         train_dataset = APTOSDataset(
-            csv_file='dummy.csv',  # Will use df directly
+            dataframe=train_df,
             img_dir=str(self.data_dir / 'train_images'),
             transform=self.get_transforms('train'),
             image_size=self.image_size,
             preprocess_mode=self.preprocess_mode
         )
-        train_dataset.data = train_df
         
         val_dataset = APTOSDataset(
-            csv_file='dummy.csv',  # Will use df directly
+            dataframe=val_df,
             img_dir=str(self.data_dir / 'train_images'),
             transform=self.get_transforms('val'),
             image_size=self.image_size,
             preprocess_mode=self.preprocess_mode
         )
-        val_dataset.data = val_df
         
         # Create data loaders
         train_loader = DataLoader(

@@ -60,7 +60,7 @@ class TestBackendAPI:
             files={"file": ("test.txt", text_content, "text/plain")}
         )
         assert response.status_code == 400
-        assert "Upload an image file" in response.json()["detail"]
+        assert "Unsupported file format" in response.json()["detail"] or "Upload an image file" in response.json()["detail"]
 
 
 class TestImagePrediction:

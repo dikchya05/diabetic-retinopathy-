@@ -117,3 +117,37 @@ def temp_model_path():
 def class_names():
     """Standard class names for diabetic retinopathy"""
     return ['No DR', 'Mild DR', 'Moderate DR', 'Severe DR', 'Proliferative DR']
+
+
+# Additional fixtures for backend testing
+@pytest.fixture
+def mock_get_model():
+    """Mock get_model function for testing"""
+    from unittest.mock import Mock, patch
+    mock_model = Mock()
+    mock_model.return_value = torch.tensor([[0.1, 0.2, 0.5, 0.15, 0.05]])
+    
+    with patch('backend.app.predict.get_model', return_value=mock_model):
+        yield mock_model
+
+
+@pytest.fixture
+def mock_predict():
+    """Mock predict function for testing"""
+    from unittest.mock import patch
+    
+    def mock_predict_func(image):
+        return 2, 0.75, [0.1, 0.15, 0.75, 0.0, 0.0]
+    
+    with patch('backend.app.predict.predict', side_effect=mock_predict_func):
+        yield mock_predict_func
+
+
+# Set up random seeds for reproducible tests
+@pytest.fixture(autouse=True)
+def setup_random_seeds():
+    """Set random seeds for reproducible testing"""
+    np.random.seed(42)
+    torch.manual_seed(42)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(42)

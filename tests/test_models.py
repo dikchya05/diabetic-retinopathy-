@@ -164,7 +164,11 @@ class TestModelPersistence:
     
     def test_model_checkpoint_save_load(self, sample_model):
         """Test saving and loading model checkpoint"""
-        with tempfile.NamedTemporaryFile(suffix='.pth') as temp_file:
+        # Use a temporary file with delete=False to avoid Windows issues
+        temp_file = tempfile.NamedTemporaryFile(suffix='.pth', delete=False)
+        temp_file.close()  # Close the file handle
+        
+        try:
             # Save model
             checkpoint = {
                 'model_state_dict': sample_model.state_dict(),
@@ -183,6 +187,9 @@ class TestModelPersistence:
             assert 'model_name' in loaded_checkpoint
             assert loaded_checkpoint['model_name'] == 'efficientnet_b0'
             assert loaded_checkpoint['n_classes'] == 5
+        finally:
+            # Cleanup
+            os.unlink(temp_file.name)
     
     def test_model_state_dict_consistency(self, sample_model):
         """Test model state dict consistency"""

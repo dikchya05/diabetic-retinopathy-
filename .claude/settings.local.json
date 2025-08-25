@@ -18,7 +18,8 @@
       "Bash(npm run dev:*)",
       "Bash(npm uninstall:*)",
       "Bash(cmd /c:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(copy mltrain_advanced_fixed.py mltrain_advanced.py)"
     ],
     "deny": [],
     "ask": [],
