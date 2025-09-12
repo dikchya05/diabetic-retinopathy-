@@ -69,6 +69,28 @@ const InfoIcon = () => (
   </svg>
 );
 
+const getDescriptionForSeverity = (severity: number) => {
+  const descriptions = [
+    'No signs of diabetic retinopathy detected. The retina appears healthy with no visible damage from diabetes.',
+    'Early signs of diabetic retinopathy are present. Small areas of balloon-like swelling in blood vessels (microaneurysms) may be visible.',
+    'Moderate diabetic retinopathy shows more extensive blood vessel blockages. Some blood vessels that nourish the retina are blocked.',
+    'Severe diabetic retinopathy exhibits many more blocked blood vessels, depriving several areas of the retina of their blood supply.',
+    'Proliferative diabetic retinopathy - the most advanced stage. New, abnormal blood vessels grow in the retina and may bleed or cause scarring.'
+  ];
+  return descriptions[severity] || 'Unknown severity level';
+};
+
+const getFollowUpForSeverity = (severity: number) => {
+  const followUps = [
+    'Annual eye exam recommended to monitor for any changes.',
+    'Follow-up in 6-12 months. Monitor blood sugar levels closely.',
+    'Follow-up in 3-6 months. Consider laser treatment if progression occurs.',
+    'Follow-up in 2-4 months. Laser treatment may be necessary to prevent vision loss.',
+    'Immediate treatment required. Anti-VEGF injections and/or laser surgery recommended.'
+  ];
+  return followUps[severity] || 'Consult with ophthalmologist for appropriate follow-up';
+};
+
 const PhoneIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
     <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
