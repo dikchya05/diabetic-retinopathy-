@@ -12,6 +12,9 @@ import {
   Legend,
 } from "chart.js";
 import styles from "./page.module.css";
+import PatientList from "./components/PatientList";
+import PatientForm from "./components/PatientForm";
+import ScanHistory from "./components/ScanHistory";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -76,6 +79,9 @@ export default function Home() {
   const [image, setImage] = useState<File | null>(null);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'scan' | 'patients' | 'new-patient' | 'history'>('scan');
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [showPatientForm, setShowPatientForm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const labels = [
@@ -98,6 +104,11 @@ export default function Home() {
     if (!image) return;
     const formData = new FormData();
     formData.append("file", image);
+    
+    // Add patient_id if a patient is selected
+    if (selectedPatient?.id) {
+      formData.append("patient_id", selectedPatient.id.toString());
+    }
 
     setLoading(true);
     try {
@@ -105,10 +116,28 @@ export default function Home() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setResult(res.data);
+      
+      // If scan was saved to a patient, show a success message
+      if (selectedPatient?.id && res.data.patient_id) {
+        console.log(`Scan saved for patient ${selectedPatient.first_name} ${selectedPatient.last_name}`);
+      }
     } catch (err) {
       console.error(err);
     }
     setLoading(false);
+  };
+
+  const handlePatientSubmit = async (patientData: any) => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/patients", patientData);
+      setSelectedPatient(response.data);
+      setShowPatientForm(false);
+      setActiveTab('scan');
+      alert(`Patient ${response.data.first_name} ${response.data.last_name} created successfully!`);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to create patient');
+    }
   };
 
   // Helper function to get urgency class
@@ -146,8 +175,60 @@ export default function Home() {
       </header>
 
       <main className={styles.main}>
-        {/* Hero Section */}
-        <div className={styles.hero}>
+        {/* Navigation Tabs */}
+        <div className={styles.tabContainer}>
+          <button
+            className={`${styles.tab} ${activeTab === 'scan' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('scan')}
+          >
+            Scan Image
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'patients' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('patients')}
+          >
+            Patient List
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'new-patient' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('new-patient')}
+          >
+            New Patient
+          </button>
+          {selectedPatient && (
+            <button
+              className={`${styles.tab} ${activeTab === 'history' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('history')}
+            >
+              History ({selectedPatient.first_name})
+            </button>
+          )}
+        </div>
+
+        {/* Selected Patient Banner */}
+        {selectedPatient && activeTab === 'scan' && (
+          <div className={styles.patientBanner}>
+            <div className={styles.patientBannerContent}>
+              <span className={styles.patientBannerLabel}>Selected Patient:</span>
+              <span className={styles.patientBannerName}>
+                {selectedPatient.first_name} {selectedPatient.last_name}
+              </span>
+              <span className={styles.patientBannerId}>({selectedPatient.patient_id})</span>
+            </div>
+            <button
+              className={styles.clearPatientButton}
+              onClick={() => setSelectedPatient(null)}
+            >
+              Clear Selection
+            </button>
+          </div>
+        )}
+
+        {/* Tab Content */}
+        {activeTab === 'scan' && (
+          <>
+            {/* Hero Section */}
+            <div className={styles.hero}>
           <h1 className={styles.heroTitle}>
             AI-Powered Diabetic Retinopathy Detection
           </h1>
@@ -552,8 +633,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* Medical Disclaimer Section */}
-        <div className={styles.disclaimerSection}>
+            {/* Medical Disclaimer Section */}
+            <div className={styles.disclaimerSection}>
           <div className={styles.disclaimerHeader}>
             <div className={styles.disclaimerIcon}>
               <InfoIcon />
@@ -600,6 +681,128 @@ export default function Home() {
             </button>
           </div>
         </div>
+          </>
+        )}
+
+        {/* Patients Tab */}
+        {activeTab === 'patients' && (
+          <div className={styles.tabContent}>
+            <PatientList 
+              onSelectPatient={(patient) => {
+                setSelectedPatient(patient);
+                setActiveTab('scan');
+              }}
+              selectedPatientId={selectedPatient?.id}
+            />
+          </div>
+        )}
+
+        {/* New Patient Tab */}
+        {activeTab === 'new-patient' && (
+          <div className={styles.tabContent}>
+            <PatientForm 
+              onSubmit={handlePatientSubmit}
+              onSkip={() => setActiveTab('scan')}
+            />
+          </div>
+        )}
+
+        {/* History Tab */}
+        {activeTab === 'history' && selectedPatient && (
+          <div className={styles.tabContent}>
+            <ScanHistory 
+              patient={selectedPatient}
+              onViewScan={async (scan) => {
+                // Convert scan data to the format expected by the results display
+                const fullResult = {
+                  scan_id: scan.scan_id,
+                  patient_id: selectedPatient.id,
+                  prediction: scan.prediction_class,
+                  label: scan.prediction_label,
+                  confidence: scan.confidence_score,
+                  probabilities: scan.probabilities || [0, 0, 0, 0, 0],
+                  gradcam_base64: null,
+                  
+                  // Medical Information
+                  severity: scan.severity,
+                  description: getDescriptionForSeverity(scan.prediction_class),
+                  risk_level: scan.risk_level,
+                  
+                  // Current State
+                  current_state: scan.current_state || {},
+                  
+                  // Recommendations and Follow-up
+                  recommendations: scan.recommendations || [],
+                  follow_up: getFollowUpForSeverity(scan.prediction_class),
+                  urgency: scan.urgency,
+                  
+                  // Risk Assessment
+                  risk_factors: scan.risk_factors || {},
+                  prevention_tips: scan.prevention_tips || [],
+                  
+                  // Statistics
+                  statistics: scan.statistics || {},
+                  
+                  // General Advice
+                  general_advice: {
+                    lifestyle: [
+                      "Maintain healthy weight (BMI < 25)",
+                      "Exercise regularly (30 min/day)",
+                      "Follow diabetic diet strictly",
+                      "Monitor blood sugar daily",
+                      "Take all medications as prescribed"
+                    ],
+                    monitoring: [
+                      "Regular HbA1c tests (every 3 months)",
+                      "Blood pressure checks",
+                      "Cholesterol monitoring",
+                      "Kidney function tests",
+                      "Regular foot examinations"
+                    ],
+                    warning_signs: [
+                      "Sudden vision changes or loss",
+                      "Flashes of light in vision",
+                      "Dark curtain over vision",
+                      "Sudden increase in floaters",
+                      "Eye pain or pressure"
+                    ]
+                  },
+                  
+                  // Confidence Note
+                  confidence_note: scan.confidence_score < 0.7 
+                    ? "Note: Confidence is moderate. Consider retaking image or getting second opinion."
+                    : "AI analysis confidence is high.",
+                  
+                  // Resources
+                  resources: {
+                    hotlines: [
+                      "Healthline NZ: 0800 611 116 (24/7 free health advice)",
+                      "Diabetes NZ: 0800 DIABETES (0800 342 238)",
+                      "Blind Low Vision NZ: 0800 24 33 33",
+                      "Emergency: 111 (for urgent eye emergencies)"
+                    ],
+                    websites: [
+                      "diabetes.org.nz",
+                      "health.govt.nz/your-health/conditions-and-treatments/diseases-and-illnesses/diabetes",
+                      "blindlowvision.org.nz",
+                      "eyehealthaotearoa.org.nz",
+                      "maculardegenerationnz.org.nz"
+                    ],
+                    nz_services: [
+                      "Free annual diabetes checks through your GP",
+                      "Retinal screening through local DHB services",
+                      "Green prescription for exercise support",
+                      "Community diabetes education programmes"
+                    ]
+                  }
+                };
+                
+                setResult(fullResult);
+                setActiveTab('scan');
+              }}
+            />
+          </div>
+        )}
       </main>
     </div>
   );

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Read(//c/Users/anil.bhusal/Music/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
