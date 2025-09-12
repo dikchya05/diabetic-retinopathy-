@@ -9,12 +9,12 @@ torch
 torchvision
 timm
 albumentations
-scikit-learn==1.2.0
+scikit-learn>=1.3.0
 
 
 
 # explainability
-pytorch-grad-cam
+grad-cam
 
 # backend
 fastapi

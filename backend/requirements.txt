@@ -5,6 +5,6 @@ pillow
 torch
 torchvision
 timm
-pytorch-grad-cam
+grad-cam
 numpy
 opencv-python-headless

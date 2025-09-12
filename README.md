@@ -52,7 +52,7 @@ source venv/bin/activate
 
 ```bash
 pip install -r backend/requirements.txt
-pip install -r ml/requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 4. Prepare dataset
