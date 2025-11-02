@@ -1,7 +1,7 @@
 """
 Pydantic schemas for request/response validation
 """
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
@@ -31,6 +31,22 @@ class PatientBase(BaseModel):
     # Medications
     medications: Optional[List[str]] = []
     insulin_therapy: bool = False
+
+    @field_validator('phone', 'patient_id', 'diabetes_type', mode='before')
+    @classmethod
+    def empty_str_to_none(cls, v):
+        """Convert empty strings to None for optional string fields"""
+        if v == '' or v is None:
+            return None
+        return v
+
+    @field_validator('date_of_birth', mode='before')
+    @classmethod
+    def empty_date_to_none(cls, v):
+        """Convert empty strings to None for date fields"""
+        if v == '' or v is None:
+            return None
+        return v
 
 class PatientCreate(PatientBase):
     pass

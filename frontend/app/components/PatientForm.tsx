@@ -23,8 +23,28 @@ interface PatientData {
   insulin_therapy: boolean;
 }
 
+interface PatientSubmitData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string | null;
+  date_of_birth: string | null;
+  diabetes_type: string | null;
+  diabetes_duration_years: number | null;
+  hba1c_latest: number | null;
+  blood_pressure_systolic: number | null;
+  blood_pressure_diastolic: number | null;
+  has_hypertension: boolean;
+  has_kidney_disease: boolean;
+  has_high_cholesterol: boolean;
+  is_smoker: boolean;
+  family_history_dr: boolean;
+  medications: string[];
+  insulin_therapy: boolean;
+}
+
 interface PatientFormProps {
-  onSubmit: (patient: PatientData) => void;
+  onSubmit: (patient: PatientSubmitData) => void;
   onSkip?: () => void;
   isLoading?: boolean;
 }
@@ -54,7 +74,7 @@ export default function PatientForm({ onSubmit, onSkip, isLoading }: PatientForm
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ ...prev, [name]: checked }));
@@ -84,7 +104,20 @@ export default function PatientForm({ onSubmit, onSkip, isLoading }: PatientForm
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    // Clean up the data - convert empty strings to null for optional fields
+    const cleanedData: PatientSubmitData = {
+      ...formData,
+      phone: formData.phone || null,
+      date_of_birth: formData.date_of_birth || null,
+      diabetes_type: formData.diabetes_type || null,
+      diabetes_duration_years: formData.diabetes_duration_years || null,
+      hba1c_latest: formData.hba1c_latest || null,
+      blood_pressure_systolic: formData.blood_pressure_systolic || null,
+      blood_pressure_diastolic: formData.blood_pressure_diastolic || null,
+    };
+
+    onSubmit(cleanedData);
   };
 
   return (
@@ -321,7 +354,7 @@ export default function PatientForm({ onSubmit, onSkip, isLoading }: PatientForm
               Add
             </button>
           </div>
-          
+
           {formData.medications.length > 0 && (
             <div className={styles.medicationList}>
               {formData.medications.map((med, index) => (
