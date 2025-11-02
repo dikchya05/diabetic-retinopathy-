@@ -110,7 +110,7 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Use the notification hook
-  const { notification, showSuccess, showError, hideNotification } = useNotification();
+  const { notification, showSuccess, showError, showInfo, hideNotification } = useNotification();
 
   const labels = [
     "No DR",
@@ -282,7 +282,12 @@ export default function Home() {
             </div>
             <button
               className={styles.clearPatientButton}
-              onClick={() => setSelectedPatient(null)}
+              onClick={() => {
+                setSelectedPatient(null);
+                setImage(null);
+                setResult(null);
+                showInfo('Patient selection cleared');
+              }}
             >
               Clear Selection
             </button>
@@ -773,10 +778,14 @@ export default function Home() {
         {/* Patients Tab */}
         {activeTab === 'patients' && (
           <div className={styles.tabContent}>
-            <PatientList 
+            <PatientList
               onSelectPatient={(patient) => {
                 setSelectedPatient(patient);
                 setActiveTab('scan');
+                // Clear previous scan data
+                setImage(null);
+                setResult(null);
+                showSuccess(`Selected patient: ${patient.first_name} ${patient.last_name}`);
               }}
               selectedPatientId={selectedPatient?.id}
             />
@@ -882,9 +891,12 @@ export default function Home() {
                     ]
                   }
                 };
-                
+
+                // Clear uploaded image and set historical result
+                setImage(null);
                 setResult(fullResult);
                 setActiveTab('scan');
+                showInfo('Viewing historical scan');
               }}
             />
           </div>
