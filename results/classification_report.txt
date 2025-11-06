@@ -1,0 +1,19 @@
+DIABETIC RETINOPATHY CLASSIFICATION REPORT
+================================================================================
+
+                  precision    recall  f1-score   support
+
+           No DR     0.9562    0.9668    0.9615       271
+         Mild DR     0.4583    0.5893    0.5156        56
+     Moderate DR     0.7377    0.6000    0.6618       150
+       Severe DR     0.3077    0.5517    0.3951        29
+Proliferative DR     0.6000    0.4091    0.4865        44
+
+        accuracy                         0.7618       550
+       macro avg     0.6120    0.6234    0.6041       550
+    weighted avg     0.7832    0.7618    0.7665       550
+
+
+================================================================================
+Overall Accuracy: 0.7618
+Cohen's Kappa: 0.6452

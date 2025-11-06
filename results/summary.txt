@@ -1,0 +1,32 @@
+DIABETIC RETINOPATHY MODEL EVALUATION SUMMARY
+================================================================================
+
+Evaluation Date: 2025-11-06 17:44:11
+Model: best_model.pth
+Test Set Size: 550 images
+
+OVERALL PERFORMANCE:
+--------------------------------------------------------------------------------
+Accuracy:      0.7618 (76.18%)
+Cohen's Kappa: 0.6452
+Macro F1:      0.6041
+Weighted F1:   0.7665
+
+PER-CLASS PERFORMANCE:
+--------------------------------------------------------------------------------
+Class                Precision    Recall       F1-Score     AUC          Support
+--------------------------------------------------------------------------------
+No DR                0.9562       0.9668       0.9615       0.9918       271
+Mild DR              0.4583       0.5893       0.5156       0.8987       56
+Moderate DR          0.7377       0.6000       0.6618       0.9288       150
+Severe DR            0.3077       0.5517       0.3951       0.9218       29
+Proliferative DR     0.6000       0.4091       0.4865       0.9346       44
+
+================================================================================
+Files generated:
+  - metrics.json (comprehensive metrics)
+  - classification_report.txt (detailed report)
+  - test_predictions.csv (all predictions)
+  - confusion_matrix.png (visualization)
+  - roc_curves.png (ROC analysis)
+  - summary.txt (this file)

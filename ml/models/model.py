@@ -18,7 +18,20 @@ def set_seed(seed=42):
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
-def create_model(model_name='efficientnet_b0', n_classes=5, pretrained=True):
+def create_model(model_name='resnet50', n_classes=5, pretrained=True):
+    """
+    Create a model for Diabetic Retinopathy classification
+
+    Args:
+        model_name: Model architecture (default: 'resnet50' as specified in final year report)
+        n_classes: Number of DR severity classes (default: 5)
+        pretrained: Use ImageNet pretrained weights (default: True)
+
+    Returns:
+        PyTorch model
+
+    Note: Using ResNet50 architecture for consistency with final year report documentation
+    """
     model = timm.create_model(model_name, pretrained=pretrained, num_classes=n_classes)
     return model
 
@@ -31,7 +44,7 @@ def compute_class_weights(df, label_col='label'):
 def train_loop(
     labels_df,
     img_dir,
-    model_name='efficientnet_b0',
+    model_name='resnet50',  # Changed to resnet50 to match final year report
     image_size=224,
     epochs=10,
     batch_size=16,

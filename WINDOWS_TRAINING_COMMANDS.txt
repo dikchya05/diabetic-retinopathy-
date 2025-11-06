@@ -1,0 +1,124 @@
+================================================================================
+                    WINDOWS TRAINING COMMANDS - QUICK REFERENCE
+================================================================================
+
+IMPORTANT: On Windows, use commands on ONE LINE (no backslashes!)
+
+================================================================================
+                              QUICK TEST (5 EPOCHS)
+================================================================================
+
+python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 5 --batch-size 8
+
+
+================================================================================
+                              BASIC TRAINING (20 EPOCHS)
+================================================================================
+
+python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 20
+
+
+================================================================================
+                              LOW MEMORY TRAINING
+================================================================================
+
+python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --batch-size 4 --num-workers 0
+
+
+================================================================================
+                              PRODUCTION TRAINING (50 EPOCHS)
+================================================================================
+
+python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 50 --batch-size 32
+
+
+================================================================================
+                              CUSTOM TRAINING
+================================================================================
+
+python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 30 --batch-size 16 --lr 2e-4
+
+
+================================================================================
+                              AFTER TRAINING
+================================================================================
+
+Check what model files exist:
+dir ml\models
+
+Check model architecture:
+python ml/check_model.py
+
+Evaluate model (use correct filename):
+python ml/evaluate.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --model-path ml/models/best_model.pth
+
+View results:
+type results\summary.txt
+
+
+================================================================================
+                              TROUBLESHOOTING
+================================================================================
+
+Problem: Out of memory
+Command: python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --batch-size 4 --num-workers 0
+
+Problem: DataLoader error
+Command: python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --num-workers 0
+
+Problem: Want to test quickly
+Command: python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 3 --batch-size 8
+
+
+================================================================================
+                              HELPFUL WINDOWS COMMANDS
+================================================================================
+
+Check if GPU available:
+python -c "import torch; print('CUDA available:', torch.cuda.is_available())"
+
+Count images:
+dir /b ml\data\train_images | find /c /v ""
+
+View CSV:
+type ml\data\train.csv | more
+
+List saved models:
+dir ml\models
+
+
+================================================================================
+                              NOTE ABOUT BACKSLASHES
+================================================================================
+
+DON'T use backslashes (\) for line continuation in Windows CMD!
+
+WRONG (Linux style):
+python train_model.py --labels-csv ml/data/train.csv \
+                      --img-dir ml/data/train_images \
+                      --epochs 5
+
+RIGHT (Windows - all on one line):
+python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 5
+
+OR use ^ in CMD:
+python train_model.py --labels-csv ml/data/train.csv ^
+                      --img-dir ml/data/train_images ^
+                      --epochs 5
+
+OR use ` in PowerShell:
+python train_model.py --labels-csv ml/data/train.csv `
+                      --img-dir ml/data/train_images `
+                      --epochs 5
+
+
+================================================================================
+                              READY TO START!
+================================================================================
+
+Copy and paste this command to start training:
+
+python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 20
+
+
+Good luck! 🚀
