@@ -99,6 +99,24 @@ const PhoneIcon = () => (
   </svg>
 );
 
+const ClockIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+  </svg>
+);
+
+const WarningIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+  </svg>
+);
+
+const EmergencyIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 5h4v4h-4v4h-2v-4H6V8h4V4h2v4z"/>
+  </svg>
+);
+
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
   const [result, setResult] = useState<any>(null);
@@ -212,6 +230,51 @@ export default function Home() {
     if (urgency?.includes("High")) return styles.urgencyHigh;
     if (urgency?.includes("Moderate")) return styles.urgencyModerate;
     return styles.urgencyRoutine;
+  };
+
+  // Helper function to get urgency details
+  const getUrgencyDetails = (urgency: string, followUp: string) => {
+    if (urgency?.includes("EMERGENCY")) {
+      return {
+        icon: <EmergencyIcon />,
+        title: "EMERGENCY",
+        subtitle: "Seek immediate medical attention",
+        timeframe: "Go to hospital now or call 111",
+        priority: "Critical"
+      };
+    } else if (urgency?.includes("URGENT")) {
+      return {
+        icon: <WarningIcon />,
+        title: "URGENT ATTENTION NEEDED",
+        subtitle: "Schedule specialist appointment immediately",
+        timeframe: `Follow-up needed: ${followUp}`,
+        priority: "High"
+      };
+    } else if (urgency?.includes("High")) {
+      return {
+        icon: <AlertIcon />,
+        title: "HIGH PRIORITY",
+        subtitle: "Schedule appointment soon",
+        timeframe: `Follow-up needed: ${followUp}`,
+        priority: "Medium-High"
+      };
+    } else if (urgency?.includes("Moderate")) {
+      return {
+        icon: <ClockIcon />,
+        title: "MODERATE PRIORITY",
+        subtitle: "Schedule appointment in the coming weeks",
+        timeframe: `Follow-up needed: ${followUp}`,
+        priority: "Medium"
+      };
+    } else {
+      return {
+        icon: <CheckIcon />,
+        title: "ROUTINE FOLLOW-UP",
+        subtitle: "Regular monitoring recommended",
+        timeframe: `Next check-up: ${followUp}`,
+        priority: "Low"
+      };
+    }
   };
 
   // Helper function to get risk class
@@ -522,11 +585,31 @@ export default function Home() {
         {result && (
           <div className={styles.medicalInfoContainer}>
             {/* Urgency Banner */}
-            {result.urgency && (
-              <div className={`${styles.urgencyBanner} ${getUrgencyClass(result.urgency)}`}>
-                {result.urgency}
-              </div>
-            )}
+            {result.urgency && (() => {
+              const urgencyInfo = getUrgencyDetails(result.urgency, result.follow_up);
+              return (
+                <div className={`${styles.urgencyBanner} ${getUrgencyClass(result.urgency)}`}>
+                  <div className={styles.urgencyBannerIcon}>
+                    {urgencyInfo.icon}
+                  </div>
+                  <div className={styles.urgencyBannerContent}>
+                    <div className={styles.urgencyBannerTitle}>
+                      {urgencyInfo.title}
+                    </div>
+                    <div className={styles.urgencyBannerSubtitle}>
+                      {urgencyInfo.subtitle}
+                    </div>
+                    <div className={styles.urgencyBannerTimeframe}>
+                      <ClockIcon />
+                      <span>{urgencyInfo.timeframe}</span>
+                    </div>
+                  </div>
+                  <div className={styles.urgencyBannerPriority}>
+                    Priority: {urgencyInfo.priority}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Current State Analysis */}
             <div className={styles.medicalCard}>

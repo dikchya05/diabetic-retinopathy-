@@ -2,8 +2,8 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # points to backend/
 
-# MODEL_PATH = os.getenv('MODEL_PATH', os.path.join(BASE_DIR, '..', 'ml', 'models', 'best_model.pth'))
-MODEL_PATH = os.getenv('MODEL_PATH', os.path.join(BASE_DIR, '..', 'ml', 'models', 'best_model-1.pth'))
+MODEL_PATH = os.getenv('MODEL_PATH', os.path.join(BASE_DIR, '..', 'ml', 'models', 'best_model.pth'))
+# MODEL_PATH = os.getenv('MODEL_PATH', os.path.join(BASE_DIR, '..', 'ml', 'models', 'best_model-1.pth'))
 
 # Model Configuration
 # Using ResNet50 architecture as specified in the final year report
