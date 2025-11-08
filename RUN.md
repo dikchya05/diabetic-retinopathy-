@@ -76,6 +76,7 @@ npm install
 ```bash
 # Make sure virtual environment is activated
 # From project root directory:
+venv\Scripts\activate
 cd backend
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```

@@ -1,88 +1,117 @@
 {
-  "evaluation_date": "2025-11-07T10:30:00.000000",
-  "model_path": "ml/models\\best_model_improved.pth",
+  "evaluation_date": "2025-11-06T17:44:11.242447",
+  "model_path": "ml/models\\best_model.pth",
   "test_set_size": 550,
-  "note": "SAMPLE FILE - These are example improved metrics, not actual model results",
   "metrics": {
-    "overall_accuracy": 0.97,
+    "overall_accuracy": 0.7618181818181818,
     "per_class": {
       "No DR": {
-        "precision": 0.9926,
-        "recall": 0.9926,
-        "f1_score": 0.9926,
+        "precision": 0.9562043795620438,
+        "recall": 0.966789667896679,
+        "f1_score": 0.9614678899082569,
         "support": 271
       },
       "Mild DR": {
-        "precision": 0.9464,
-        "recall": 0.9464,
-        "f1_score": 0.9464,
+        "precision": 0.4583333333333333,
+        "recall": 0.5892857142857143,
+        "f1_score": 0.515625,
         "support": 56
       },
       "Moderate DR": {
-        "precision": 0.9600,
-        "recall": 0.9600,
-        "f1_score": 0.9600,
+        "precision": 0.7377049180327869,
+        "recall": 0.6,
+        "f1_score": 0.6617647058823529,
         "support": 150
       },
       "Severe DR": {
-        "precision": 0.9310,
-        "recall": 0.9310,
-        "f1_score": 0.9310,
+        "precision": 0.3076923076923077,
+        "recall": 0.5517241379310345,
+        "f1_score": 0.3950617283950617,
         "support": 29
       },
       "Proliferative DR": {
-        "precision": 0.9545,
-        "recall": 0.9545,
-        "f1_score": 0.9545,
+        "precision": 0.6,
+        "recall": 0.4090909090909091,
+        "f1_score": 0.4864864864864865,
         "support": 44
       }
     },
     "macro_avg": {
-      "precision": 0.9569,
-      "recall": 0.9569,
-      "f1_score": 0.9569
+      "precision": 0.6119869877240943,
+      "recall": 0.6233780858408673,
+      "f1_score": 0.6040811621344316
     },
     "weighted_avg": {
-      "precision": 0.9700,
-      "recall": 0.9700,
-      "f1_score": 0.9700
+      "precision": 0.7832306693745009,
+      "recall": 0.7618181818181818,
+      "f1_score": 0.7664721810479141
     },
-    "cohen_kappa": 0.9542,
+    "cohen_kappa": 0.6452241907369292,
     "confusion_matrix": [
-      [269, 1, 1, 0, 0],
-      [1, 53, 2, 0, 0],
-      [1, 2, 144, 2, 1],
-      [0, 0, 1, 27, 1],
-      [0, 0, 1, 1, 42]
+      [
+        262,
+        7,
+        2,
+        0,
+        0
+      ],
+      [
+        9,
+        33,
+        14,
+        0,
+        0
+      ],
+      [
+        3,
+        26,
+        90,
+        25,
+        6
+      ],
+      [
+        0,
+        0,
+        7,
+        16,
+        6
+      ],
+      [
+        0,
+        6,
+        9,
+        11,
+        18
+      ]
     ],
     "sensitivity_specificity": {
       "No DR": {
-        "sensitivity": 0.9926,
-        "specificity": 0.9928
+        "sensitivity": 0.966789667896679,
+        "specificity": 0.956989247311828
       },
       "Mild DR": {
-        "sensitivity": 0.9464,
-        "specificity": 0.9939
+        "sensitivity": 0.5892857142857143,
+        "specificity": 0.9210526315789473
       },
       "Moderate DR": {
-        "sensitivity": 0.9600,
-        "specificity": 0.9875
+        "sensitivity": 0.6,
+        "specificity": 0.92
       },
       "Severe DR": {
-        "sensitivity": 0.9310,
-        "specificity": 0.9942
+        "sensitivity": 0.5517241379310345,
+        "specificity": 0.9309021113243762
       },
       "Proliferative DR": {
-        "sensitivity": 0.9545,
-        "specificity": 0.9921
+        "sensitivity": 0.4090909090909091,
+        "specificity": 0.9762845849802372
       }
     }
   },
   "auc_scores": {
-    "No DR": 0.9985,
-    "Mild DR": 0.9912,
-    "Moderate DR": 0.9925,
-    "Severe DR": 0.9888,
-    "Proliferative DR": 0.9902
+    "No DR": 0.99179991799918,
+    "Mild DR": 0.8987131289762869,
+    "Moderate DR": 0.92885,
+    "Severe DR": 0.9217684823615063,
+    "Proliferative DR": 0.9346478620194034
   }
 }
