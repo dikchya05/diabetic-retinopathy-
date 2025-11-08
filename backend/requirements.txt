@@ -8,3 +8,6 @@ timm
 grad-cam
 numpy
 opencv-python-headless
+email-validator
+sqlalchemy
+pydantic[email]

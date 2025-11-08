@@ -1,0 +1,88 @@
+================================================================================
+                    HOW TO TRAIN YOUR MODEL - QUICK START
+================================================================================
+
+STEP 1: PREPARE YOUR DATA
+--------------------------
+Make sure you have:
+  ✓ ml/data/train.csv           (labels file)
+  ✓ ml/data/train_images/       (folder with images)
+
+
+STEP 2: RUN TRAINING
+--------------------
+
+EASIEST WAY (Recommended):
+
+    python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 20
+
+
+QUICK TEST (5 epochs to verify it works):
+
+    python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 5 --batch-size 8
+
+
+LOW MEMORY (if you get "out of memory" errors):
+
+    python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --batch-size 4 --num-workers 0
+
+
+PRODUCTION (best quality, takes longer):
+
+    python train_model.py --labels-csv ml/data/train.csv --img-dir ml/data/train_images --epochs 50 --batch-size 32
+
+
+STEP 3: AFTER TRAINING
+----------------------
+
+1. Check your model:
+
+   python ml/check_model.py
+
+
+2. Evaluate on test set:
+
+   python ml/evaluate.py
+
+
+3. View results:
+
+   cat results/summary.txt
+
+
+================================================================================
+                              TRAINING TIME
+================================================================================
+
+With GPU:     3-6 hours (20 epochs, ~3000 images)
+With CPU:     20-40 hours (20 epochs, ~3000 images)
+
+TIP: Use GPU if possible - it's 10-20x faster!
+
+
+================================================================================
+                          TROUBLESHOOTING
+================================================================================
+
+Problem: "CUDA out of memory"
+Solution: Add --batch-size 4
+
+Problem: "DataLoader worker error"
+Solution: Add --num-workers 0
+
+Problem: "File not found"
+Solution: Check paths to CSV and image directory
+
+
+================================================================================
+                          MORE INFORMATION
+================================================================================
+
+📖 Full guide:  TRAINING_GUIDE.md
+📋 Quick ref:   TRAINING_QUICK_REFERENCE.md
+📚 README:      README.md
+
+
+================================================================================
+                              GOOD LUCK! 🚀
+================================================================================

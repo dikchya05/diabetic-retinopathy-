@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import {
@@ -15,6 +15,8 @@ import styles from "./page.module.css";
 import PatientList from "./components/PatientList";
 import PatientForm from "./components/PatientForm";
 import ScanHistory from "./components/ScanHistory";
+import Toast from "./components/Toast";
+import { useNotification } from "./hooks/useNotification";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -97,6 +99,24 @@ const PhoneIcon = () => (
   </svg>
 );
 
+const ClockIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+  </svg>
+);
+
+const WarningIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+  </svg>
+);
+
+const EmergencyIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 5h4v4h-4v4h-2v-4H6V8h4V4h2v4z"/>
+  </svg>
+);
+
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
   const [result, setResult] = useState<any>(null);
@@ -104,7 +124,11 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'scan' | 'patients' | 'new-patient' | 'history'>('scan');
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [showPatientForm, setShowPatientForm] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Use the notification hook
+  const { notification, showSuccess, showError, showInfo, hideNotification } = useNotification();
 
   const labels = [
     "No DR",
@@ -119,7 +143,43 @@ export default function Home() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setImage(e.target.files?.[0] || null);
+    const file = e.target.files?.[0] || null;
+    setImage(file);
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      // Check if it's an image file
+      if (file.type.startsWith('image/')) {
+        setImage(file);
+      } else {
+        alert('Please drop an image file (JPG, PNG, JPEG)');
+      }
+    }
   };
 
   const handleSubmit = async () => {
@@ -138,13 +198,14 @@ export default function Home() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setResult(res.data);
-      
+
       // If scan was saved to a patient, show a success message
       if (selectedPatient?.id && res.data.patient_id) {
-        console.log(`Scan saved for patient ${selectedPatient.first_name} ${selectedPatient.last_name}`);
+        showSuccess(`Scan saved for patient ${selectedPatient.first_name} ${selectedPatient.last_name}`);
       }
     } catch (err) {
       console.error(err);
+      showError('Failed to analyze image. Please try again.');
     }
     setLoading(false);
   };
@@ -155,10 +216,10 @@ export default function Home() {
       setSelectedPatient(response.data);
       setShowPatientForm(false);
       setActiveTab('scan');
-      alert(`Patient ${response.data.first_name} ${response.data.last_name} created successfully!`);
+      showSuccess(`Patient ${response.data.first_name} ${response.data.last_name} created successfully!`);
     } catch (err) {
       console.error(err);
-      alert('Failed to create patient');
+      showError('Failed to create patient. Please try again.');
     }
   };
 
@@ -169,6 +230,51 @@ export default function Home() {
     if (urgency?.includes("High")) return styles.urgencyHigh;
     if (urgency?.includes("Moderate")) return styles.urgencyModerate;
     return styles.urgencyRoutine;
+  };
+
+  // Helper function to get urgency details
+  const getUrgencyDetails = (urgency: string, followUp: string) => {
+    if (urgency?.includes("EMERGENCY")) {
+      return {
+        icon: <EmergencyIcon />,
+        title: "EMERGENCY",
+        subtitle: "Seek immediate medical attention",
+        timeframe: "Go to hospital now or call 111",
+        priority: "Critical"
+      };
+    } else if (urgency?.includes("URGENT")) {
+      return {
+        icon: <WarningIcon />,
+        title: "URGENT ATTENTION NEEDED",
+        subtitle: "Schedule specialist appointment immediately",
+        timeframe: `Follow-up needed: ${followUp}`,
+        priority: "High"
+      };
+    } else if (urgency?.includes("High")) {
+      return {
+        icon: <AlertIcon />,
+        title: "HIGH PRIORITY",
+        subtitle: "Schedule appointment soon",
+        timeframe: `Follow-up needed: ${followUp}`,
+        priority: "Medium-High"
+      };
+    } else if (urgency?.includes("Moderate")) {
+      return {
+        icon: <ClockIcon />,
+        title: "MODERATE PRIORITY",
+        subtitle: "Schedule appointment in the coming weeks",
+        timeframe: `Follow-up needed: ${followUp}`,
+        priority: "Medium"
+      };
+    } else {
+      return {
+        icon: <CheckIcon />,
+        title: "ROUTINE FOLLOW-UP",
+        subtitle: "Regular monitoring recommended",
+        timeframe: `Next check-up: ${followUp}`,
+        priority: "Low"
+      };
+    }
   };
 
   // Helper function to get risk class
@@ -239,7 +345,12 @@ export default function Home() {
             </div>
             <button
               className={styles.clearPatientButton}
-              onClick={() => setSelectedPatient(null)}
+              onClick={() => {
+                setSelectedPatient(null);
+                setImage(null);
+                setResult(null);
+                showInfo('Patient selection cleared');
+              }}
             >
               Clear Selection
             </button>
@@ -272,18 +383,37 @@ export default function Home() {
                   onChange={handleFileChange}
                   className={styles.hiddenInput}
                 />
-                
-                <div onClick={handleFileClick} className={styles.dropzone}>
+
+                <div
+                  onClick={handleFileClick}
+                  onDragOver={handleDragOver}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={styles.dropzone}
+                  style={{
+                    borderColor: isDragging ? '#3b82f6' : undefined,
+                    backgroundColor: isDragging ? 'rgba(59, 130, 246, 0.05)' : undefined,
+                  }}
+                >
                   <div className={styles.dropzoneContent}>
                     <div className={styles.uploadIcon}>
                       <UploadIcon />
                     </div>
                     <div>
                       <p className={styles.uploadText}>
-                        {image ? "Change Image" : "Drop your retinal image here"}
+                        {isDragging
+                          ? "Drop image here"
+                          : image
+                          ? "Change Image"
+                          : "Drop your retinal image here"}
                       </p>
                       <p className={styles.uploadSubtext}>
-                        {image ? image.name : "or click to browse files"}
+                        {isDragging
+                          ? "Release to upload"
+                          : image
+                          ? image.name
+                          : "or click to browse files"}
                       </p>
                     </div>
                     <p className={styles.uploadHint}>
@@ -297,12 +427,14 @@ export default function Home() {
               <div className={styles.previewAreaWrapper}>
                 {image ? (
                   <div className={styles.imagePreview}>
-                    <img 
+                    <img
                       src={URL.createObjectURL(image)}
                       alt="Selected retinal image"
                       className={styles.previewImage}
                     />
-                    <p className={styles.previewLabel}>Selected Image</p>
+                    <p className={styles.previewLabel}>
+                      Selected Image
+                    </p>
                   </div>
                 ) : (
                   <div className={styles.emptyPreview}>
@@ -453,11 +585,31 @@ export default function Home() {
         {result && (
           <div className={styles.medicalInfoContainer}>
             {/* Urgency Banner */}
-            {result.urgency && (
-              <div className={`${styles.urgencyBanner} ${getUrgencyClass(result.urgency)}`}>
-                {result.urgency}
-              </div>
-            )}
+            {result.urgency && (() => {
+              const urgencyInfo = getUrgencyDetails(result.urgency, result.follow_up);
+              return (
+                <div className={`${styles.urgencyBanner} ${getUrgencyClass(result.urgency)}`}>
+                  <div className={styles.urgencyBannerIcon}>
+                    {urgencyInfo.icon}
+                  </div>
+                  <div className={styles.urgencyBannerContent}>
+                    <div className={styles.urgencyBannerTitle}>
+                      {urgencyInfo.title}
+                    </div>
+                    <div className={styles.urgencyBannerSubtitle}>
+                      {urgencyInfo.subtitle}
+                    </div>
+                    <div className={styles.urgencyBannerTimeframe}>
+                      <ClockIcon />
+                      <span>{urgencyInfo.timeframe}</span>
+                    </div>
+                  </div>
+                  <div className={styles.urgencyBannerPriority}>
+                    Priority: {urgencyInfo.priority}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Current State Analysis */}
             <div className={styles.medicalCard}>
@@ -709,10 +861,14 @@ export default function Home() {
         {/* Patients Tab */}
         {activeTab === 'patients' && (
           <div className={styles.tabContent}>
-            <PatientList 
+            <PatientList
               onSelectPatient={(patient) => {
                 setSelectedPatient(patient);
                 setActiveTab('scan');
+                // Clear previous scan data
+                setImage(null);
+                setResult(null);
+                showSuccess(`Selected patient: ${patient.first_name} ${patient.last_name}`);
               }}
               selectedPatientId={selectedPatient?.id}
             />
@@ -818,14 +974,22 @@ export default function Home() {
                     ]
                   }
                 };
-                
+
+                // Clear uploaded image and set historical result
+                setImage(null);
                 setResult(fullResult);
                 setActiveTab('scan');
+                showInfo('Viewing historical scan');
               }}
             />
           </div>
         )}
       </main>
+
+      {/* Toast Notification */}
+      {notification && (
+        <Toast notification={notification} onClose={hideNotification} />
+      )}
     </div>
   );
 }

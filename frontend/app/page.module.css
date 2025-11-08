@@ -486,12 +486,81 @@
 }
 
 .urgencyBanner {
-  padding: 1rem 1.5rem;
+  padding: 1.5rem;
   border-radius: 0.75rem;
   margin-bottom: 2rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.urgencyBannerIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.urgencyBannerContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.urgencyBannerTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.urgencyBannerSubtitle {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.urgencyBannerTimeframe {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  opacity: 0.85;
+  margin-top: 0.25rem;
+}
+
+.urgencyBannerTimeframe svg {
+  width: 16px;
+  height: 16px;
+}
+
+.urgencyBannerPriority {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.4);
+  font-size: 0.875rem;
+  font-weight: 700;
   text-align: center;
-  font-size: 1.125rem;
+  min-width: 100px;
+}
+
+@media (max-width: 768px) {
+  .urgencyBanner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .urgencyBannerPriority {
+    width: 100%;
+  }
 }
 
 .urgencyRoutine {

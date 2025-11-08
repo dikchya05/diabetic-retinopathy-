@@ -30,7 +30,7 @@ class RetinopathyDataset(Dataset):
 
 def get_transforms(image_size=224):
     train_transforms = A.Compose([
-        A.RandomResizedCrop(image_size, image_size, scale=(0.8, 1.0)),
+        A.RandomResizedCrop(size=(image_size, image_size), scale=(0.8, 1.0)),
         A.HorizontalFlip(p=0.5),
         A.RandomRotate90(p=0.3),
         A.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.1, rotate_limit=15, p=0.4),
@@ -41,7 +41,7 @@ def get_transforms(image_size=224):
         ToTensorV2()
     ])
     valid_transforms = A.Compose([
-        A.Resize(image_size, image_size),
+        A.Resize(height=image_size, width=image_size),
         A.Normalize(),
         ToTensorV2()
     ])

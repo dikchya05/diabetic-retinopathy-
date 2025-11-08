@@ -25,6 +25,7 @@ app = FastAPI(title="DR Inference API")
 # Add CORS Middleware
 origins = [
     "http://localhost:3000",  # Next.js dev server
+    "http://192.168.88.10:3000/", # Next.js dev server
     "http://localhost:3001",  # Next.js alternate port
     "http://localhost:3002",  # Next.js alternate port
     "http://127.0.0.1:3000",  # Alternate localhost
@@ -89,7 +90,9 @@ async def predict_endpoint(
 
         try:
             cam_b64 = gradcam_base64(image)
-        except Exception:
+        except Exception as e:
+            print(f"GradCAM generation failed: {str(e)}")
+            traceback.print_exc()
             cam_b64 = None
         
         # Get comprehensive medical analysis

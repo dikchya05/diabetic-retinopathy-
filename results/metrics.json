@@ -1,0 +1,88 @@
+{
+  "evaluation_date": "2025-11-07T10:30:00.000000",
+  "model_path": "ml/models\\best_model_improved.pth",
+  "test_set_size": 550,
+  "note": "SAMPLE FILE - These are example improved metrics, not actual model results",
+  "metrics": {
+    "overall_accuracy": 0.97,
+    "per_class": {
+      "No DR": {
+        "precision": 0.9926,
+        "recall": 0.9926,
+        "f1_score": 0.9926,
+        "support": 271
+      },
+      "Mild DR": {
+        "precision": 0.9464,
+        "recall": 0.9464,
+        "f1_score": 0.9464,
+        "support": 56
+      },
+      "Moderate DR": {
+        "precision": 0.9600,
+        "recall": 0.9600,
+        "f1_score": 0.9600,
+        "support": 150
+      },
+      "Severe DR": {
+        "precision": 0.9310,
+        "recall": 0.9310,
+        "f1_score": 0.9310,
+        "support": 29
+      },
+      "Proliferative DR": {
+        "precision": 0.9545,
+        "recall": 0.9545,
+        "f1_score": 0.9545,
+        "support": 44
+      }
+    },
+    "macro_avg": {
+      "precision": 0.9569,
+      "recall": 0.9569,
+      "f1_score": 0.9569
+    },
+    "weighted_avg": {
+      "precision": 0.9700,
+      "recall": 0.9700,
+      "f1_score": 0.9700
+    },
+    "cohen_kappa": 0.9542,
+    "confusion_matrix": [
+      [269, 1, 1, 0, 0],
+      [1, 53, 2, 0, 0],
+      [1, 2, 144, 2, 1],
+      [0, 0, 1, 27, 1],
+      [0, 0, 1, 1, 42]
+    ],
+    "sensitivity_specificity": {
+      "No DR": {
+        "sensitivity": 0.9926,
+        "specificity": 0.9928
+      },
+      "Mild DR": {
+        "sensitivity": 0.9464,
+        "specificity": 0.9939
+      },
+      "Moderate DR": {
+        "sensitivity": 0.9600,
+        "specificity": 0.9875
+      },
+      "Severe DR": {
+        "sensitivity": 0.9310,
+        "specificity": 0.9942
+      },
+      "Proliferative DR": {
+        "sensitivity": 0.9545,
+        "specificity": 0.9921
+      }
+    }
+  },
+  "auc_scores": {
+    "No DR": 0.9985,
+    "Mild DR": 0.9912,
+    "Moderate DR": 0.9925,
+    "Severe DR": 0.9888,
+    "Proliferative DR": 0.9902
+  }
+}
